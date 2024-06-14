@@ -24,7 +24,7 @@ async function init() {
           const user = await JWTService.decodeJWTToken(token as string);
           return { user };
         } catch (error) {
-          return {};
+          return { user: null };
         }
       },
     })

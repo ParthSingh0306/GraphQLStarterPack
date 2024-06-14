@@ -2,6 +2,7 @@ import { prismaClient } from "../lib/db";
 import { createHmac, randomBytes } from "node:crypto";
 import JWT from "jsonwebtoken";
 import { JWT_SECRET } from "./jwt";
+import MailService from "./mail";
 
 export interface CreateUserPayload {
   firstName: string;
@@ -71,6 +72,40 @@ class UserService {
     // Generate token
     const token = JWT.sign({ id: user.id, email: user.email }, JWT_SECRET);
     return token;
+  }
+
+  public static async forgotPassword(payload: { email: string }) {
+    const { email } = payload;
+    const user = await UserService.getUserByEmail(email);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const newPassword = randomBytes(8).toString("hex");
+    const salt = randomBytes(32).toString("hex");
+    const hashedPassword = UserService.generateHash(salt, newPassword);
+
+    await prismaClient.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        salt,
+        password: hashedPassword,
+      },
+    });
+
+    const res = await MailService.sendMail({
+      password: newPassword,
+      email,
+      userId: user.id,
+    });
+
+    console.log(res);
+    if (res) {
+      return true;
+    }
+    return false;
   }
 }
 

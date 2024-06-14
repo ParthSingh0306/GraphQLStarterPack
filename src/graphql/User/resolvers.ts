@@ -22,6 +22,10 @@ const mutations = {
     const res = await UserService.createUser(payload);
     return res.id;
   },
+  forgotPassword: async (_: any, payload: { email: string }) => {
+    const res = await UserService.forgotPassword(payload);
+    return res;
+  },
 };
 
 export const resolvers = {
