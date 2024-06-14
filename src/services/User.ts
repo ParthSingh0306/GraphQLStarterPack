@@ -1,8 +1,7 @@
 import { prismaClient } from "../lib/db";
 import { createHmac, randomBytes } from "node:crypto";
 import JWT from "jsonwebtoken";
-
-const JWT_SECRET = "$uper$ecret";
+import { JWT_SECRET } from "./jwt";
 
 export interface CreateUserPayload {
   firstName: string;
@@ -72,10 +71,6 @@ class UserService {
     // Generate token
     const token = JWT.sign({ id: user.id, email: user.email }, JWT_SECRET);
     return token;
-  }
-
-  public static decodeJWTToken(token: string) {
-    return JWT.verify(token, JWT_SECRET);
   }
 }
 

@@ -2,7 +2,7 @@ import express from "express";
 import { expressMiddleware } from "@apollo/server/express4";
 import bodyParser from "body-parser";
 import createApolloGraphqlServer from "./graphql";
-import UserService from "./services/User";
+import JWTService from "./services/jwt";
 
 async function init() {
   const app = express();
@@ -21,7 +21,7 @@ async function init() {
       context: async ({ req, res }) => {
         const token = req.headers["token"];
         try {
-          const user = await UserService.decodeJWTToken(token as string);
+          const user = await JWTService.decodeJWTToken(token as string);
           return { user };
         } catch (error) {
           return {};

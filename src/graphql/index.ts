@@ -1,8 +1,9 @@
 import { ApolloServer } from "@apollo/server";
 import { User } from "./User";
+import { GraphqlContext } from "../interfaces";
 
 async function createApolloGraphqlServer() {
-  const graphqlServer = new ApolloServer({
+  const graphqlServer = new ApolloServer<GraphqlContext>({
     typeDefs: `
       ${User.typeDefs}
       type Query {
